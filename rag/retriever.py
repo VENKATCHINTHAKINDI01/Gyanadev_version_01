@@ -27,6 +27,7 @@ class RetrievedChunk:
     characters:     list[str]
     topics:         list[str]
     source_citation:str
+    inline_ref:     str
     dense_score:    float
     bm25_score:     float
     hybrid_score:   float
@@ -85,7 +86,7 @@ class HybridRetriever:
         if not docs:
             logger.warning("No documents in Qdrant for BM25 index")
             self._bm25_docs = []
-            self._bm25 = BM25Okapi([[]])
+            self._bm25 = None  # ← fixed: was BM25Okapi([[]]) which crashes on empty corpus
             return
         self._bm25_docs = docs
         tokenized = [d["text"].lower().split() for d in docs]
@@ -98,7 +99,7 @@ class HybridRetriever:
         if self._bm25 is None:
             self.build_bm25_index()
         if not self._bm25_docs:
-            return []
+            return []  # ← safely returns empty list when no docs in Qdrant
 
         tokens = query.lower().split()
         scores = self._bm25.get_scores(tokens)
@@ -148,6 +149,7 @@ class HybridRetriever:
                 characters=r.get("characters", []),
                 topics=r.get("topics", []),
                 source_citation=r.get("source_citation", ""),
+                inline_ref=r.get("inline_ref", ""),
                 dense_score=r["dense_score"],
                 bm25_score=r["bm25_score"],
                 hybrid_score=hybrid,

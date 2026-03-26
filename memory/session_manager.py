@@ -86,16 +86,16 @@ class SessionManager:
 
         if last_char:
             return (
-                f"Welcome back, {name}-ji! 🙏 Last time we were learning about "
+                f"Welcome back, {name}! 🙏 Last time we were learning about "
                 f"{last_char} in the {last_book}. Shall we continue from there?{streak_msg}"
             )
         elif last_topic:
             return (
-                f"Welcome back, {name}-ji! 🙏 Last time we were studying {last_topic} "
+                f"Welcome back, {name}! 🙏 Last time we were studying {last_topic} "
                 f"in the {last_book}. Ready to continue?{streak_msg}"
             )
         else:
-            return f"Welcome back, {name}-ji! 🙏 Ready to continue our journey?{streak_msg}"
+            return f"Welcome back, {name}! 🙏 Ready to continue our journey?{streak_msg}"
 
     async def save_turn(
         self,

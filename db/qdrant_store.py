@@ -77,21 +77,24 @@ class QdrantStore:
 
         points = []
         for chunk in chunks:
+            d = chunk if isinstance(chunk, dict) else chunk.to_dict()
             point = PointStruct(
-                id=self._make_int_id(chunk["chunk_id"]),
-                vector=chunk["embedding"],
+                id=self._make_int_id(d["chunk_id"]),
+                vector=d["embedding"],
                 payload={
-                    "chunk_id": chunk["chunk_id"],
-                    "text": chunk["text"],
-                    "book": chunk["book"],
-                    "section_name": chunk["section_name"],
-                    "section_number": chunk["section_number"],
-                    "verse_start": chunk.get("verse_start"),
-                    "verse_end": chunk.get("verse_end"),
-                    "characters": chunk.get("characters", []),
-                    "topics": chunk.get("topics", []),
-                    "source_citation": chunk["source_citation"],
-                    "token_count": chunk.get("token_count", 0),
+                    "chunk_id":       d["chunk_id"],
+                    "text":           d.get("text", ""),
+                    "clean_text":     d.get("clean_text", d.get("text", "")),
+                    "book":           d["book"],
+                    "section_name":   d["section_name"],
+                    "section_number": d["section_number"],
+                    "verse_start":    d.get("verse_start"),
+                    "verse_end":      d.get("verse_end"),
+                    "characters":     d.get("characters", []),
+                    "topics":         d.get("topics", []),
+                    "source_citation":d["source_citation"],
+                    "inline_ref":     d.get("inline_ref", ""),
+                    "token_count":    d.get("token_count", 0),
                 },
             )
             points.append(point)
@@ -134,17 +137,19 @@ class QdrantStore:
 
         return [
             {
-                "chunk_id": r.payload["chunk_id"],
-                "text": r.payload["text"],
-                "book": r.payload["book"],
-                "section_name": r.payload["section_name"],
+                "chunk_id":       r.payload["chunk_id"],
+                "text":           r.payload.get("text", ""),
+                "clean_text":     r.payload.get("clean_text", r.payload.get("text", "")),
+                "book":           r.payload["book"],
+                "section_name":   r.payload["section_name"],
                 "section_number": r.payload["section_number"],
-                "verse_start": r.payload.get("verse_start"),
-                "verse_end": r.payload.get("verse_end"),
-                "characters": r.payload.get("characters", []),
-                "topics": r.payload.get("topics", []),
-                "source_citation": r.payload["source_citation"],
-                "score": r.score,
+                "verse_start":    r.payload.get("verse_start"),
+                "verse_end":      r.payload.get("verse_end"),
+                "characters":     r.payload.get("characters", []),
+                "topics":         r.payload.get("topics", []),
+                "source_citation":r.payload["source_citation"],
+                "inline_ref":     r.payload.get("inline_ref", ""),
+                "score":          r.score,
             }
             for r in results
         ]

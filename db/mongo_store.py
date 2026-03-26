@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 from typing import Any
+import certifi
 import motor.motor_asyncio
 from pymongo import MongoClient, ASCENDING
 
@@ -21,7 +22,11 @@ class MongoStore:
     """Sync MongoDB client — used for admin/scripts."""
 
     def __init__(self, uri: str, db_name: str = "gyanadeva"):
-        self.client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        self.client = MongoClient(
+            uri,
+            serverSelectionTimeoutMS=5000,
+            tlsCAFile=certifi.where(),
+        )
         self.db = self.client[db_name]
         self._ensure_indexes()
 
@@ -41,7 +46,10 @@ class AsyncMongoStore:
     """Async MongoDB client — used in FastAPI routes."""
 
     def __init__(self, uri: str, db_name: str = "gyanadeva"):
-        self.client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(
+            uri,
+            tlsCAFile=certifi.where(),
+        )
         self.db = self.client[db_name]
 
     # ── Students ──────────────────────────────────────────────────
